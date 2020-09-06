@@ -54,6 +54,8 @@ public class User extends BaseEntity {
         this.git = git;
     }
 
+    //one role can have many users
+    //many users can be admins or just users
     @ManyToOne
     public Role getRole() {
         return role;
