@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "homework")
 public class Homework extends BaseEntity {
 
-    private LocalDateTime addedon;
+    private LocalDateTime addedOn;
     private String gitAddress;
     private User author;
     private Exercise exercise;
@@ -20,11 +20,11 @@ public class Homework extends BaseEntity {
 
     @Column(name = "added_on", nullable = false)
     public LocalDateTime getAddedon() {
-        return addedon;
+        return addedOn;
     }
 
     public void setAddedon(LocalDateTime addedon) {
-        this.addedon = addedon;
+        this.addedOn = addedOn;
     }
 
     @Column(name = "git_address", nullable = false, unique = true)
