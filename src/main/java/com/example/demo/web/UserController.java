@@ -44,8 +44,8 @@ public class UserController {
         } else {
             modelAndView.setViewName("redirect:/");
         }
-        //todo Login in Service
-        httpSession.setAttribute("user", "userServiceModel");
+//        todo Login in Service
+//        httpSession.setAttribute("user", "userServiceModel");
         httpSession.setAttribute("id", "userId");
         return modelAndView;
     }
