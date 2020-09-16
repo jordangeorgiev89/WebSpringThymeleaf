@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -31,22 +32,41 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String login() {
-        return "login";
+    public ModelAndView login(@Valid @ModelAttribute("userLoginBindingModel")
+                                UserLoginBindingModel userLoginBindingModel,
+                        BindingResult bindingResult, ModelAndView modelAndView) {
+
+        modelAndView.addObject("userLoginBindingModel", userLoginBindingModel);
+        modelAndView.setViewName("login");
+        return modelAndView;
     }
 
     @PostMapping("/login")
     public ModelAndView loginConfirm(@Valid @ModelAttribute("userLoginBindingModel")
                                              UserLoginBindingModel userLoginBindingModel,
-                                     BindingResult bindingResult, ModelAndView modelAndView, HttpSession httpSession) {
+                                     BindingResult bindingResult, ModelAndView modelAndView,
+                                     HttpSession httpSession, RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("userLoginBindingModel", userLoginBindingModel);
             modelAndView.setViewName("redirect:/users/login");
         } else {
-            modelAndView.setViewName("redirect:/");
+            UserServiceModel userServiceModel = this.userService
+                    .findByUsername(userLoginBindingModel.getUsername());
+
+            if (userServiceModel == null || !userServiceModel.getPassword().equals(userLoginBindingModel.getPassword())) {
+                redirectAttributes.addFlashAttribute("notFound", true);
+                redirectAttributes.addFlashAttribute("userLoginBindingModel", userLoginBindingModel);
+                modelAndView.setViewName("redirect:/users/login");
+
+            } else {
+                httpSession.setAttribute("user", userServiceModel);
+                httpSession.setAttribute("id", userServiceModel.getId());
+                modelAndView.setViewName("redirect:/");
+                httpSession.setAttribute("role", userServiceModel.getRole().getName());
+
+            }
         }
-//        todo Login in Service
-//        httpSession.setAttribute("user", "userServiceModel");
-        httpSession.setAttribute("id", "userId");
         return modelAndView;
     }
 
